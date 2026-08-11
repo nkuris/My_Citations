@@ -1,0 +1,5 @@
+---
+# Brakeman configuration
+# Suppress EOLRails warning for this demo project
+ignore_checks:
+  - EOLRails
