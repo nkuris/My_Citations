@@ -28,12 +28,12 @@ gem "jbuilder"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-gem 'fiddle'
+gem "fiddle"
 
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 
-gem 'rack-cors'
+gem "rack-cors"
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
@@ -58,4 +58,3 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
-

@@ -25,7 +25,6 @@
         permitted = params.permit(:journal)
         scope = scope.where(journal: permitted[:journal]) if permitted[:journal].present?
         scope
-      end
 
       def validated_sort_order
         order = params[:order].to_s.downcase
