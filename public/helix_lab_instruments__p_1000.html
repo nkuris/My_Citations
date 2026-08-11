@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>P·1000 — HelixLab Instruments</title>
+  <style>
+    /* ── TOKENS ───────────────────────────────────────────── */
+    :root {
+      --void:   #07091A;
+      --ink:    #111827;
+      --paper:  #EDF1F8;
+      --snow:   #F7FAFD;
+
+      --blue:   #0068BC;
+      --blue-d: #004A8C;
+      --sky:    #3AAEF5;
+      --aqua:   #00C4B0;
+      --gold:   #C4801C;
+      --slate:  #697D97;
+      --dim:    rgba(105,125,151,0.15);
+
+      --bg:     var(--paper);
+      --surf:   var(--snow);
+      --fg:     var(--ink);
+      --fg-sub: var(--slate);
+      --rule:   var(--dim);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: var(--ink); --surf: #161E30; --fg: var(--paper); }
+    }
+    :root[data-theme="dark"]  { --bg: var(--ink); --surf: #161E30; --fg: var(--paper); }
+    :root[data-theme="light"] { --bg: var(--paper); --surf: var(--snow); --fg: var(--ink); }
+
+    /* ── RESET ────────────────────────────────────────────── */
+    *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ──────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.9rem 2.5rem;
+      background: rgba(7,9,26,0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(105,125,151,0.12);
+    }
+    .nav-logo {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: #EDF1F8;
+    }
+    .nav-logo em { color: var(--aqua); font-style: normal; }
+    .nav-links { display: flex; gap: 2.2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.75rem; color: var(--slate); text-decoration: none;
+      letter-spacing: 0.06em; transition: color 0.18s;
+    }
+    .nav-links a:hover { color: var(--sky); }
+    .nav-cta {
+      font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em;
+      color: #EDF1F8; background: var(--blue); border: none;
+      padding: 0.45rem 1.2rem; cursor: pointer;
+      font-family: inherit; transition: background 0.18s;
+    }
+    .nav-cta:hover { background: #0080E0; }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      background: var(--void);
+      min-height: 100svh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 7rem 1.5rem 4rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background-image: radial-gradient(circle, rgba(58,174,245,0.10) 1px, transparent 1px);
+      background-size: 30px 30px;
+      pointer-events: none;
+    }
+    .hero::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 75% at 50% 50%, transparent 35%, rgba(7,9,26,0.75) 100%);
+      pointer-events: none;
+    }
+
+    .hero-top {
+      position: relative; z-index: 1;
+      text-align: center; margin-bottom: 2rem;
+    }
+    .eyebrow {
+      font-size: 0.63rem; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--aqua); margin-bottom: 0.9rem;
+      display: block;
+    }
+    .hero-title {
+      font-size: clamp(3.2rem, 9vw, 7.5rem);
+      font-weight: 800; letter-spacing: -0.02em;
+      line-height: 0.9; color: #EDF1F8;
+      margin-bottom: 1.1rem;
+    }
+    .hero-title .dot { color: var(--sky); }
+    .hero-sub {
+      font-size: 0.92rem; color: var(--slate);
+      max-width: 42ch; margin: 0 auto; line-height: 1.72;
+    }
+
+    /* diagram scroll wrapper */
+    .diagram-scroll {
+      position: relative; z-index: 1;
+      width: 100%; overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex; justify-content: center;
+    }
+    .diagram-scroll svg { min-width: 560px; }
+
+    .hero-foot {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; gap: 2rem;
+      margin-top: 2.5rem;
+    }
+    .btn-order {
+      font-family: inherit; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #EDF1F8; background: var(--blue);
+      padding: 0.8rem 2.2rem; border: none; cursor: pointer;
+      transition: background 0.18s;
+    }
+    .btn-order:hover { background: #0082E0; }
+    .price-tag {
+      font-size: 1.05rem; font-weight: 600;
+      color: #EDF1F8; font-variant-numeric: tabular-nums;
+    }
+    .price-tag small {
+      font-size: 0.72rem; font-weight: 400;
+      color: var(--slate); display: block; letter-spacing: 0.04em;
+    }
+
+    /* ── STAT BAND ────────────────────────────────────────── */
+    .stat-band {
+      display: flex; overflow-x: auto;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      background: var(--surf);
+    }
+    .stat-cell {
+      flex: 1 0 auto; min-width: 160px;
+      padding: 2.2rem 2rem; text-align: center;
+      border-right: 1px solid var(--rule);
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-num {
+      display: block;
+      font-size: 1.9rem; font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-family: "Courier New", Courier, monospace;
+      letter-spacing: -0.02em; line-height: 1;
+      color: var(--blue); margin-bottom: 0.35rem;
+    }
+    .stat-lbl {
+      font-size: 0.63rem; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--fg-sub);
+    }
+
+    /* ── FEATURES ─────────────────────────────────────────── */
+    .features {
+      max-width: 1040px; margin: 0 auto;
+      padding: 5.5rem 2rem;
+    }
+    .section-head { margin-bottom: 3rem; }
+    .section-head .eyebrow { text-align: left; margin-bottom: 0.5rem; }
+    .section-head h2 {
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 700; letter-spacing: -0.025em;
+      line-height: 1.1; text-wrap: balance;
+    }
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1px;
+      background: var(--rule);
+      border: 1px solid var(--rule);
+    }
+    .feat-card {
+      background: var(--surf);
+      padding: 2.2rem;
+    }
+    .feat-icon {
+      width: 32px; height: 32px;
+      color: var(--blue); margin-bottom: 1.2rem;
+    }
+    .feat-name {
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: -0.01em; margin-bottom: 0.5rem;
+    }
+    .feat-body {
+      font-size: 0.83rem; color: var(--fg-sub); line-height: 1.7;
+    }
+
+    /* ── SPECS ────────────────────────────────────────────── */
+    .specs-wrap {
+      background: var(--surf);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      padding: 5rem 2rem;
+    }
+    .specs-inner { max-width: 680px; margin: 0 auto; }
+    .specs-inner .section-head h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); }
+    .spec-table {
+      width: 100%; border-collapse: collapse;
+      margin-top: 2.5rem; font-size: 0.84rem;
+    }
+    .spec-table tr { border-bottom: 1px solid var(--rule); }
+    .spec-table tr:last-child { border-bottom: none; }
+    .spec-table td { padding: 0.82rem 0; vertical-align: top; }
+    .spec-table td:first-child {
+      color: var(--fg-sub); width: 50%;
+      font-size: 0.76rem; font-weight: 500; letter-spacing: 0.03em;
+      padding-right: 1rem;
+    }
+    .spec-table td:last-child {
+      font-weight: 600; font-variant-numeric: tabular-nums;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.82rem;
+    }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      padding: 2.8rem 2rem; text-align: center;
+      border-top: 1px solid var(--rule);
+    }
+    .footer-brand {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--fg); margin-bottom: 0.4rem;
+    }
+    .footer-fine {
+      font-size: 0.72rem; color: var(--fg-sub);
+    }
+
+    @media (max-width: 640px) {
+      .nav-links { display: none; }
+      .hero-foot { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Helix<em>Lab</em></span>
+  <ul class="nav-links">
+    <li><a href="#">Products</a></li>
+    <li><a href="#">Calibration</a></li>
+    <li><a href="#">Support</a></li>
+    <li><a href="#">Research</a></li>
+  </ul>
+  <button class="nav-cta">Request Quote</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-top">
+    <span class="eyebrow">HelixLab Instruments · Series P · Variable Volume</span>
+    <h1 class="hero-title">P<span class="dot">·</span>1000</h1>
+    <p class="hero-sub">Variable-volume micropipette. 100–1000 μL. The instrument that moves biology forward, one precise microliter at a time.</p>
+  </div>
+
+  <!-- ANNOTATED DIAGRAM -->
+  <div class="diagram-scroll">
+    <svg viewBox="0 0 640 430" xmlns="http://www.w3.org/2000/svg"
+         style="width:100%;max-width:640px;height:auto"
+         role="img" aria-label="Annotated cross-section diagram of the HelixLab P·1000 micropipette">
+
+      <!-- ════════════════════════════════════
+           PIPETTE BODY  (center x ≈ 320)
+           ════════════════════════════════════ -->
+
+      <!-- Plunger button -->
+      <rect x="296" y="18" width="48" height="40" rx="7" fill="#003562"/>
+      <rect x="300" y="22" width="40" height="32" rx="5" fill="#004E8A"/>
+      <line x1="301" y1="31" x2="339" y2="31" stroke="#002A4E" stroke-width="1.2"/>
+      <line x1="301" y1="39" x2="339" y2="39" stroke="#002A4E" stroke-width="1.2"/>
+      <line x1="301" y1="47" x2="339" y2="47" stroke="#002A4E" stroke-width="1.2"/>
+
+      <!-- Volume adjuster collar -->
+      <rect x="287" y="56" width="66" height="12" rx="2" fill="#7896B0"/>
+      <rect x="289" y="58" width="62" height="8" rx="1.5" fill="#8FAFC4"/>
+      <!-- collar ribbing -->
+      <line x1="297" y1="58" x2="297" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="305" y1="58" x2="305" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="313" y1="58" x2="313" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="321" y1="58" x2="321" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="329" y1="58" x2="329" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="337" y1="58" x2="337" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+      <line x1="345" y1="58" x2="345" y2="66" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+
+      <!-- Main body -->
+      <rect x="288" y="66" width="64" height="154" rx="4" fill="#0068BC"/>
+      <!-- left highlight -->
+      <rect x="288" y="66" width="9" height="154" rx="3" fill="#1A84D8" opacity="0.42"/>
+      <!-- right shadow -->
+      <rect x="343" y="66" width="9" height="154" rx="3" fill="#003D78" opacity="0.35"/>
+
+      <!-- Volume display window -->
+      <rect x="293" y="96" width="54" height="38" rx="3" fill="#001020"/>
+      <rect x="294" y="97" width="52" height="36" rx="2.5" fill="#00162B"/>
+      <!-- digital readout glow effect -->
+      <rect x="294" y="97" width="52" height="36" rx="2.5" fill="none"
+            stroke="rgba(0,196,176,0.12)" stroke-width="1"/>
+      <!-- volume number -->
+      <text x="320" y="122" text-anchor="middle"
+            fill="#00CCBA" font-family="'Courier New', Courier, monospace"
+            font-size="19" font-weight="700" letter-spacing="1">1000</text>
+      <!-- unit label -->
+      <text x="320" y="136" text-anchor="middle"
+            fill="#2A7A90" font-family="'Courier New', Courier, monospace"
+            font-size="7.5" letter-spacing="2.5">&#956;L</text>
+
+      <!-- Model text on body -->
+      <text x="320" y="178" text-anchor="middle"
+            fill="rgba(255,255,255,0.28)"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="7.5" font-weight="700" letter-spacing="6">P &#183; 1000</text>
+
+      <!-- Calibration lines on body -->
+      <line x1="293" y1="197" x2="347" y2="197" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+      <line x1="293" y1="206" x2="347" y2="206" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+      <line x1="293" y1="215" x2="347" y2="215" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+
+      <!-- Tip ejector button (right side of body) -->
+      <rect x="350" y="148" width="15" height="30" rx="3" fill="#004880"/>
+      <rect x="351" y="150" width="13" height="26" rx="2" fill="#003868"/>
+      <line x1="352" y1="161" x2="363" y2="161" stroke="#005A94" stroke-width="1"/>
+      <line x1="352" y1="166" x2="363" y2="166" stroke="#005A94" stroke-width="1"/>
+
+      <!-- Lower housing (taper) -->
+      <path d="M289 220 L296 272 L344 272 L351 220 Z" fill="#1A7ED6"/>
+      <!-- taper left highlight -->
+      <path d="M289 220 L296 272 L302 272 L294 220 Z" fill="#2A94EC" opacity="0.38"/>
+      <!-- taper right shadow -->
+      <path d="M344 272 L351 220 L345 220 L340 272 Z" fill="#003878" opacity="0.3"/>
+
+      <!-- Metal shaft -->
+      <rect x="301" y="272" width="38" height="68" rx="2" fill="#90A8BE"/>
+      <!-- shaft highlight -->
+      <rect x="301" y="272" width="6" height="68" rx="1" fill="rgba(255,255,255,0.32)"/>
+      <!-- shaft shadow -->
+      <rect x="331" y="272" width="8" height="68" rx="1" fill="rgba(0,0,0,0.14)"/>
+      <!-- shaft band -->
+      <rect x="301" y="316" width="38" height="5" fill="#7C95AA"/>
+
+      <!-- Tip cone / nozzle -->
+      <path d="M303 340 L309 382 L331 382 L337 340 Z" fill="#7A8EA0"/>
+      <!-- nozzle highlight -->
+      <path d="M303 340 L309 382 L313 382 L306 340 Z" fill="rgba(255,255,255,0.22)"/>
+
+      <!-- Tip opening -->
+      <rect x="311" y="380" width="18" height="6" rx="1.5" fill="#4A5E70"/>
+
+      <!-- ════════════════════════════════════
+           ANNOTATION LINES + LABELS
+           ════════════════════════════════════ -->
+
+      <!-- ───── LEFT ANNOTATIONS ───── -->
+
+      <!-- 1: Thumb Plunger -->
+      <line x1="108" y1="38" x2="296" y2="38" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="296" cy="38" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="102" y="33" text-anchor="end" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">THUMB PLUNGER</text>
+      <text x="102" y="44" text-anchor="end" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">Spring-Loaded Return</text>
+
+      <!-- 2: Volume Collar -->
+      <line x1="108" y1="62" x2="288" y2="62" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="288" cy="62" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="102" y="57" text-anchor="end" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">VOLUME COLLAR</text>
+      <text x="102" y="68" text-anchor="end" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">Anti-Rotation Lock</text>
+
+      <!-- 3: Volume Display -->
+      <line x1="108" y1="115" x2="293" y2="115" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="293" cy="115" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="102" y="110" text-anchor="end" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">VOLUME DISPLAY</text>
+      <text x="102" y="121" text-anchor="end" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">LCD Readout &#183; &#956;L</text>
+
+      <!-- 4: Polymer Body -->
+      <line x1="108" y1="180" x2="288" y2="180" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="288" cy="180" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="102" y="175" text-anchor="end" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">POLYMER BODY</text>
+      <text x="102" y="186" text-anchor="end" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">Autoclavable PVDF</text>
+
+      <!-- ───── RIGHT ANNOTATIONS ───── -->
+
+      <!-- 5: Tip Ejector -->
+      <line x1="365" y1="163" x2="530" y2="163" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="365" cy="163" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="536" y="158" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">TIP EJECTOR</text>
+      <text x="536" y="169" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">One-Touch Release</text>
+
+      <!-- 6: Lower Housing -->
+      <line x1="351" y1="248" x2="530" y2="248" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="351" cy="248" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="536" y="243" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">LOWER HOUSING</text>
+      <text x="536" y="254" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">Tapered Cone Guide</text>
+
+      <!-- 7: Stainless Shaft -->
+      <line x1="339" y1="300" x2="530" y2="300" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="339" cy="300" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="536" y="295" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">STAINLESS SHAFT</text>
+      <text x="536" y="306" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">Universal Tip-Fit&#8482;</text>
+
+      <!-- 8: Precision Nozzle -->
+      <line x1="337" y1="365" x2="530" y2="365" stroke="rgba(105,125,151,0.4)" stroke-width="0.75" stroke-dasharray="3,3"/>
+      <circle cx="337" cy="365" r="2.5" fill="#00C4B0" opacity="0.85"/>
+      <text x="536" y="360" fill="#3A88A8"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="8" font-weight="600" letter-spacing="0.08em">PRECISION NOZZLE</text>
+      <text x="536" y="371" fill="#C8DDF0"
+            font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="9.5" font-weight="600">Sealed O-Ring Seat</text>
+
+    </svg>
+  </div>
+
+  <div class="hero-foot">
+    <button class="btn-order">Request Quote</button>
+    <div class="price-tag">
+      From $289
+      <small>per unit &middot; volume sets available</small>
+    </div>
+  </div>
+</section>
+
+<!-- STAT BAND -->
+<div class="stat-band">
+  <div class="stat-cell">
+    <span class="stat-num">&plusmn;0.6%</span>
+    <span class="stat-lbl">Accuracy at 1000 &mu;L</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num">100&ndash;1000</span>
+    <span class="stat-lbl">Volume Range (&mu;L)</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num">&plusmn;0.25%</span>
+    <span class="stat-lbl">Precision CV</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num">121&deg;C</span>
+    <span class="stat-lbl">Autoclave Temperature</span>
+  </div>
+  <div class="stat-cell">
+    <span class="stat-num">5 yr</span>
+    <span class="stat-lbl">Standard Warranty</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="section-head">
+    <span class="eyebrow">Engineering &middot; Series P</span>
+    <h2>Precision is not a feature.<br>It&rsquo;s the point.</h2>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      <p class="feat-name">ISO 8655 Certified</p>
+      <p class="feat-body">Every unit ships with a traceable calibration certificate verified by gravimetric testing at three volume checkpoints &mdash; 10%, 50%, and 100% of max volume.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M8 8H4M20 8h-4M12 4V2M12 14v2M15.54 5.46l1.42-1.42M6.46 18.54l1.42-1.42M5.46 5.46L4.04 4.04M18.54 18.54l-1.42-1.42"/>
+      </svg>
+      <p class="feat-name">Fully Autoclavable Lower Assembly</p>
+      <p class="feat-body">Below the volume collar, the P&middot;1000 withstands 121&deg;C / 15 psi steam cycles without disassembly. Designed for clean-bench and BSL protocols.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/>
+      </svg>
+      <p class="feat-name">Click-Stop Volume Control</p>
+      <p class="feat-body">Each rotation increment corresponds exactly to 2 &mu;L. The anti-rotation collar locks any setting. No drift between users, no recalibration between runs.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+      </svg>
+      <p class="feat-name">Universal Tip Compatibility</p>
+      <p class="feat-body">Tip-Fit&trade; nozzle geometry accepts all major-brand 1000 &mu;L tips. The sealed O-ring seat maintains constant insertion depth across 10,000+ cycles.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+      </svg>
+      <p class="feat-name">Field-Serviceable Design</p>
+      <p class="feat-body">Three-component disassembly &mdash; no tools required. Replacement seal and piston kits stocked globally. Mean time to recalibration: under four minutes.</p>
+    </div>
+    <div class="feat-card">
+      <svg class="feat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+      </svg>
+      <p class="feat-name">5-Year Instrument Warranty</p>
+      <p class="feat-body">Standard coverage on all mechanical and material defects. Recalibration service network in 48 countries. Spare parts guaranteed for 15 years post-discontinuation.</p>
+    </div>
+  </div>
+</section>
+
+<div id="citations-badge"></div>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-brand">HelixLab Instruments</p>
+  <p class="footer-fine">Series P Liquid Handling &middot; ISO 8655 Certified &middot; Specifications subject to revision without notice &middot; &copy; 2026 HelixLab Instruments GmbH</p>
+</footer>
+<!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="/citation_widget.js"></script>
+<style>
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+</style>
+</body>
+</html>
