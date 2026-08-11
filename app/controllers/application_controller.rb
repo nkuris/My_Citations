@@ -14,9 +14,8 @@ class ApplicationController < ActionController::API
     logger.error exception.backtrace.join("\n")
     # Render HTTP 500 status with JSON payload
     render json: {
-      error: 'Internal Server Error',
-      message: Rails.env.development? ? exception.message : 'An unexpected error occurred.'
+      error: "Internal Server Error",
+      message: Rails.env.development? ? exception.message : "An unexpected error occurred."
     }, status: :internal_server_error
-
   end
 end
