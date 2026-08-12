@@ -29,7 +29,7 @@
 
       def validated_sort_order
         order = params[:order].to_s.downcase
-        SORT_ORDERS.include?(order) ? order : 'desc'
+        SORT_ORDERS.include?(order) ? order : "desc"
       end
 
       def render_internal_error(exception)
@@ -37,3 +37,4 @@
       end
     end
   end
+
