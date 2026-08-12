@@ -1,5 +1,6 @@
 ---
 # Brakeman configuration
-# Skip EOLRails because Rails 7.2.2 is required by assignment
+# Skip EOL warnings for pinned versions required by the assignment
 skip_checks:
   - CheckEOLRails
+  - CheckEOLRuby
