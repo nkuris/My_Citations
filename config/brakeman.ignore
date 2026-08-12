@@ -1,0 +1,18 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "EOL Rails",
+      "warning_code": 120,
+      "fingerprint": "EOLRails-rails-7.2.2",
+      "check_name": "EOLRails",
+      "message": "Support for Rails 7.2.2 ended on 2026-08-09",
+      "file": "Gemfile.lock",
+      "line": 395,
+      "link": null,
+      "code": null,
+      "render_path": null,
+      "location": null,
+      "user_comment": "Rails 7.2.2 is required by assignment; EOL warning is acknowledged for this demo."
+    }
+  ]
+}
