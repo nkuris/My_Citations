@@ -1,4 +1,5 @@
 ---
 # Brakeman configuration
-# Use a Brakeman ignore file for known EOL Rails warning acceptance
-ignore_file: config/brakeman.ignore
+# Skip EOLRails because Rails 7.2.2 is required by assignment
+skip_checks:
+  - EOLRails
