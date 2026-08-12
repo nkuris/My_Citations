@@ -10,9 +10,9 @@ Rails.application.routes.draw do
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
 
   namespace :api do
-    resources :citations, only: [:index, :show] 
+    resources :citations, only: [ :index, :show ]
   end
   # Defines the root path route ("/")
   # root "posts#index"
-  match '*path', to: 'application#route_not_found', via: :all
+  match "*path", to: "application#route_not_found", via: :all
 end

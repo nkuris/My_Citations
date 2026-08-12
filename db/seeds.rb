@@ -30,5 +30,5 @@ records.each do |record|
     long: record["long"]
   )
 end
-   
+
 puts "Seeded #{Citation.count} citations from the JSON file"
