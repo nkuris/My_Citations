@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   namespace :api do
     resources :citations, only: [ :index, :show ]
   end
-  # Defines the root path route ("/")
-  # root "posts#index"
+  # Define a static root page served from public/helix_lab_instruments__p_1000.html
+  root to: 'static#home'
   match "*path", to: "application#route_not_found", via: :all
 end
