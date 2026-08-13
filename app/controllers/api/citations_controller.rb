@@ -22,7 +22,9 @@
       private
 
       def apply_filters(scope)
-        permitted = params.permit(:journal)
+        # Permit :order here to avoid Rails logging an "Unpermitted parameter: :order"
+        # while still validating the value in validated_sort_order.
+        permitted = params.permit(:journal, :order)
         scope = scope.where(journal: permitted[:journal]) if permitted[:journal].present?
         scope
       end
